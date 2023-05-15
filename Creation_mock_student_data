@@ -1,0 +1,73 @@
+"""
+This is the code to create the mock dataset used in the manusript entitled
+"Using Machine Learning to Identify Predictors of At-Risk Students in Veterinary Medical Education: An Introduction for Veterinary Medicine Educators"
+
+@author: Sarah Hooper
+"""
+
+#Create mock dataset
+#To create a list of names for the student list, use the package names however note
+#Need to remove pound sign for the "pip install names" line to complete this step as package not available thru Anaconda package management system
+#pip install names 
+
+#Import required packages:
+import random  
+import names
+import numpy as np
+import pandas as pd
+
+#First create student names:
+Names = []
+
+for i in range(80):
+    NM = names.get_full_name(gender='male')
+    Names.append(NM)
+    
+for i in range(320):
+    NF = names.get_full_name(gender='female')
+    Names.append(NF)
+    
+print(Names)
+
+#Next create ethnicity/races
+random_ethnicity = []
+for i in range(400):
+    ethnicity = ['White', 'Black', 'Latinx', 'Asian', 'Not Provided']
+    random_e = random.choice(ethnicity)
+    random_ethnicity.append(random_e)
+    
+print(random_ethnicity)
+
+#Next create Age
+Age = []
+for i in range(400):
+    a = random.randint(20,40)   
+    #Will randomly add in excell a few older values for outliers
+    Age.append(a)
+
+print(Age)
+
+#Next create pre-admission GPA
+preGPA = []
+for i in range(400):
+        g = round(random.uniform(3.00,4.00), 2)
+        preGPA.append(g)
+
+print(preGPA)
+
+#Next create GRE scores
+GRE = []
+for i in range(400):
+        gre = random.randint(260,330)
+        GRE.append(gre)
+
+print(GRE)
+
+#Combine lists into dataframe
+df = pd.DataFrame(np.column_stack([Names, random_ethnicity, Age, preGPA, GRE]),
+                  columns = ["Full Name", "Race", "Age", "preGPA", "GRE"])
+
+df.head(10) #View top 10 rows of dataframe.
+
+#Export to Excel to view and then add gender column and Target column for if a student failed a course.
+#df.to_excel(r'C:\insert location to save file at\Name of dataset.xlsx')
