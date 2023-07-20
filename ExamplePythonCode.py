@@ -1,12 +1,12 @@
 """
 This is the Python code found within the manuscript 
-" "
+"Using Machine Learning in Veterinary Medical Education: An Introduction for Veterinary Medicine Educators"
 as well as the additional code needed to create the random forest machine learning models with the datasets missing GRE values.
 @author: Sarah Hooper
 """
 
 #Import dataset.
-dataset = pd.read_excel(r'C:\location of the downloaded dataset\MockData.xlsx')
+dataset = pd.read_excel(r'C:\location of the downloaded dataset\MockData.xlsx')  #Change to the location where you downloaded this file onto your computer.
 
 #Import required packages and/or required functions:
 import random 
@@ -49,7 +49,7 @@ dataset
 #Prepare data for analysis
 
 #We don't need the student ID for this ML exercise so we can drop it from the dataframe
-dataset.drop(['RandomID'], axis=1, inplace=True)
+dataset.drop(["RandomID"], axis=1, inplace=True)
 
 
 #To one-hot encode for race column
@@ -88,7 +88,7 @@ print('Testing Variables Shape:', X_testSMOTE.shape)
 print('Testing Target Shape:', y_testSMOTE.shape)
 
 #Build base model without any changes to default settings
-forest_base = RandomForestClassifier(random_state=(23))
+forest_base = RandomForestClassifier(random_state=23)
 #Fit data to model via.fit
 forest_base.fit(X_trainSMOTE, y_trainSMOTE) #using training data
 y_predictions = forest_base.predict(X_testSMOTE) #Make predictions using testing data set
@@ -122,7 +122,7 @@ cross_val_score(forest_base, X_testSMOTE, y_trueSMOTE, cv=kf, scoring = scoring)
 print(score_specificity_mean)
 
 
-#Most important features from best model
+#Most important features from the best model, Gini Index
 feature_imp_base = pd.Series(forest_base.feature_importances_, index=X.columns)
 feature_imp_base = feature_imp_base.sort_values(ascending=False)
 feature_imp_base
@@ -159,13 +159,13 @@ hyper_grid = {'n_estimators': n_trees,
 print(hyper_grid)
 
 #Initiate base model to tune
-best_params = RandomForestClassifier(random_state=(23))
+best_params = RandomForestClassifier(random_state=23)
 
 #Use random grid search to find best hyperparameters, uses kfold validation as cross validation method
 #Search 200 different combinations
 
 best_params_results = RandomizedSearchCV(estimator=best_params, param_distributions= hyper_grid, n_iter=200,
-                                         cv=kf, verbose=5, random_state=(23))
+                                         cv=kf, verbose=5, random_state=23)
 
 #Fit the random search model
 best_params_results.fit(X_trainSMOTE, y_trainSMOTE)
@@ -173,15 +173,16 @@ best_params_results.fit(X_trainSMOTE, y_trainSMOTE)
 #Find the best parameters from the grid search results
 best_params_results.best_params_
 
-#Results
-#{'n_estimators': 332,
-# 'min_samples_split': 2,
-# 'min_samples_leaf': 1,
+###Results to base the new hyperparameter grid search on.  Your output should look similar to below but likely has different values.
+#{'bootstrap': True,
+# 'max_depth': 360,
 # 'max_features': 'sqrt',
-# 'max_depth': 180,
-# 'bootstrap': True}
+# 'min_samples_leaf': 1,
+# 'min_samples_split': 2,
+# 'n_estimators': 450}
 
-#Build another hyperparameter grid using narrowed down parameter guidelines from above
+
+#Build another hyperparameter grid using narrowed down parameter guidelines from above.  The numbers may need to be adjusted based upon your output.
 #Then use GridSearchCV method to search every combinatino of grid
 new_grid = {'n_estimators': [250, 275, 300, 325, 332, 350, 375],
                'max_features': ['sqrt'],
@@ -191,13 +192,13 @@ new_grid = {'n_estimators': [250, 275, 300, 325, 332, 350, 375],
                'bootstrap': [True]}
 print(new_grid)
 
-best_params = RandomForestClassifier(random_state=(23))
+best_params = RandomForestClassifier(random_state=23)
 best_params_grid_search = GridSearchCV(estimator=best_params, param_grid=new_grid, cv=kf, n_jobs=-1, verbose=10)
 best_params_grid_search.fit(X_trainSMOTE, y_trainSMOTE)
 
 best_params_grid_search.best_params_
 
-###Results to use for new model
+###Results to use for new model output should look similar to below but likely has different values
 #{'bootstrap': True,
 # 'max_depth': 160,
 # 'max_features': 'sqrt',
@@ -239,17 +240,26 @@ print(specificity)
 #To plot ROC curve
 plot_roc_curve(best_grid_model, X_testSMOTE, y_testSMOTE)  
 
-###best model
+###best model, select between base model and new tuned model.  Can run again with different hyperparameters if not satisfactory.
 
-#Most important features from best model
+#Most important features from best model, Gini Index
 feature_imp = pd.Series(best_grid_model.feature_importances_, index=X.columns)
 feature_imp = feature_imp.sort_values(ascending=False)
 feature_imp
 
-#Plot Most important features over 1%
+#Plot Most important features.  The code below plots the top 4 features.
 feature_imp.nlargest(4).plot(kind='bar', title="Most Important Features for RUSVM Students Admitted in ", style='seaborn-colorblind')
 
+#Plot SHAP values.
+#Using already defined best model with all GRE data from above.
+best_grid_model 
 
+#Most important features from best model, SHAP values
+shap_feature_imp = shap.TreeExplainer(best_grid_model)
+shap_values = shap_feature_imp.shap_values(X_testSMOTE)
+shap.summary_plot(shap_values, X_testSMOTE) #Bar chart
+shap.summary_plot(shap_values[1], X_testSMOTE) #Beeswarm plot, students that failed a course
+shap.summary_plot(shap_values[0], X_testSMOTE) #Beeswarm plot, students that did not fail a course.
 
 
 ####
@@ -334,22 +344,23 @@ score_specificity_mean = cross_val_score(forest_base_Biased, X_testSMOTE_Biased,
 cross_val_score(forest_base_Biased, X_testSMOTE_Biased, y_trueSMOTE, cv=kf, scoring = scoring)
 print(score_specificity_mean)
 
+###best model, select between base model and new tuned model.  Can run again with different hyperparameters if not satisfactory.
 
-#Most important features from best model
+#Most important features from best model, gini model
 feature_imp_base_biased = pd.Series(forest_base_Biased.feature_importances_, index=X.columns)
 feature_imp_base_biased = feature_imp_base_biased.sort_values(ascending=False)
 feature_imp_base_biased
 
-
-###
-#How feature of importance is calculated by SHAP values
+#Plot SHAP values.
 #Using already defined best model with all GRE data from above.
-best_grid_model 
+forest_base_Biased 
 
-#Most important features from best model
-shap_feature_imp = shap.TreeExplainer(best_grid_model)
+#Most important features from best model, SHAP values
+shap_feature_imp = shap.TreeExplainer(forest_base_Biased)
 shap_values = shap_feature_imp.shap_values(X_testSMOTE)
-shap.summary_plot(shap_values, X_testSMOTE)
+shap.summary_plot(shap_values, X_testSMOTE) #Bar chart
+shap.summary_plot(shap_values[1], X_testSMOTE) #Beeswarm plot, students that failed a course
+shap.summary_plot(shap_values[0], X_testSMOTE) #Beeswarm plot, students that did not fail a course.
 
 
 shap.summary_plot(shap_values[1], X_testSMOTE)  #Fail
