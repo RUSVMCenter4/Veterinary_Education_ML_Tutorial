@@ -15,7 +15,7 @@ In tab “BiasedGRE1”, we removed the lowest GRE from 14 of the students who e
 In tab “BiasedGRE2”, we randomly removed GRE scores from 200 student records.  
 
 ## Package version file
-The text file entitiled "package_requirements" contains all the packages and the specific versions that were used during creation of the simulated data.  They can be installed prior to running the models to ensure there are no package conflicts.
+The text file entitiled "package_requirements" contains all the packages and the specific versions that were within the Anaconda Environment and includes the ones used during creation of the simulated data.  They can be installed prior to running the models to ensure there are no package conflicts.
 
 ## Python Code
 The Python code contained within the manuscript as well as the additional Python code required to generate all the random forest models using the biased datasets is available in the ExamplePythonCode.py file.
