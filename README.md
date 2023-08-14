@@ -27,3 +27,5 @@ The Python code contained within the manuscript as well as the additional Python
 4) In Spyder, you can create a new project and ensure the created project path or current path is in the root path (see https://docs.spyder-ide.org/3/projects.html).
 5) In the IPython window (Spyder IDE) use 'pip install -r package_requirements.text' to install all the required packages.
 6) Copy the python code into th Editor pane and edit the 
+
+[![DOI](https://zenodo.org/badge/640729130.svg)](https://zenodo.org/badge/latestdoi/640729130)
