@@ -1,7 +1,7 @@
 # Using Machine Learning in Veterinary Medical Education: An Introduction for Veterinary Medicine Educators
 This repository contains the demo data and the example python code for veterinary educators and administrators who are reading the manuscript entitled 
 "Using Machine Learning in Veterinary Medical Education: An Introduction for Veterinary Medicine Educators"
-Manuscript available at TBD.
+Manuscript available at https://doi.org/10.3390/vetsci10090537.
 
 ## Overview
 This repository contains the simulated student data, the Python code to create the data, the Python coce to create the machine learning models, and a package version file.
